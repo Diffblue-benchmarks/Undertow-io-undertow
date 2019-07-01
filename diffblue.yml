@@ -1,0 +1,298 @@
+buildCmd: mvn -e -X -Dlicense.skip=true -Dmaven.enforcer.skip=true  -Denforcer.skip=true -Dair.check.skip-all=true -Dmaven.test.skip=true compile
+testCmd: true
+skipVerification: true
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+ - target:
+   - dir: core/target/classes
+     file: io/undertow/util/HttpString.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/HttpString.java
+   - dir: core/target/classes
+     file: io/undertow/UndertowMessages.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/UndertowMessages.java
+   - dir: core/target/classes
+     file: io/undertow/util/Headers.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/Headers.java
+ - target:
+   - dir: core/target/classes
+     file: io/undertow/protocols/http2/Hpack.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/protocols/http2/Hpack.java
+   - dir: core/target/classes
+     file: io/undertow/UndertowMessages.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/UndertowMessages.java
+   - dir: core/target/classes
+     file: io/undertow/protocols/http2/Hpack$HeaderField.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/protocols/http2/Hpack.java
+   - dir: core/target/classes
+     file: io/undertow/util/HttpString.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/HttpString.java
+ - target:
+   - dir: core/target/classes
+     file: io/undertow/websockets/core/CloseMessage.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/websockets/core/CloseMessage.java
+   - dir: core/target/classes
+     file: io/undertow/websockets/core/UTF8Output.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/websockets/core/UTF8Output.java
+   - dir: core/target/classes
+     file: io/undertow/websockets/core/WebSockets.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/websockets/core/WebSockets.java
+ - target:
+   - dir: core/target/classes
+     file: io/undertow/util/URLUtils.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/URLUtils.java
+   - dir: core/target/classes
+     file: io/undertow/util/URLUtils$QueryStringParser.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/URLUtils.java
+   - dir: core/target/classes
+     file: io/undertow/util/URLUtils$2.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/URLUtils.java
+   - dir: core/target/classes
+     file: io/undertow/server/HttpServerExchange.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/HttpServerExchange.java
+   - dir: core/target/classes
+     file: io/undertow/UndertowMessages.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/UndertowMessages.java
+   - dir: core/target/classes
+     file: io/undertow/util/URLUtils$1.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/URLUtils.java
+ - target:
+   - dir: core/target/classes
+     file: io/undertow/server/handlers/proxy/mod_cluster/MCMPAdvertiseTask.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/handlers/proxy/mod_cluster/MCMPAdvertiseTask.java
+   - dir: core/target/classes
+     file: io/undertow/server/handlers/proxy/mod_cluster/MCMPConfig$AdvertiseConfig.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/handlers/proxy/mod_cluster/MCMPConfig.java
+   - dir: core/target/classes
+     file: io/undertow/server/handlers/proxy/mod_cluster/ModCluster.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/handlers/proxy/mod_cluster/ModCluster.java
+   - dir: core/target/classes
+     file: io/undertow/UndertowLogger.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/UndertowLogger.java
+   - dir: core/target/classes
+     file: io/undertow/util/NetworkUtils.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/NetworkUtils.java
+   - dir: core/target/classes
+     file: io/undertow/server/handlers/proxy/mod_cluster/ModClusterContainer.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/handlers/proxy/mod_cluster/ModClusterContainer.java
+ - target:
+   - dir: servlet/target/classes
+     file: io/undertow/servlet/handlers/security/SSLInformationAssociationHandler.class
+     sourceDir: servlet/src/main/java
+     sourceFile: io/undertow/servlet/handlers/security/SSLInformationAssociationHandler.java
+   - dir: servlet/target/classes
+     file: io/undertow/servlet/handlers/ServletRequestContext.class
+     sourceDir: servlet/src/main/java
+     sourceFile: io/undertow/servlet/handlers/ServletRequestContext.java
+   - dir: core/target/classes
+     file: io/undertow/server/ServerConnection.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/ServerConnection.java
+   - dir: core/target/classes
+     file: io/undertow/server/HttpHandler.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/HttpHandler.java
+   - dir: core/target/classes
+     file: io/undertow/server/SSLSessionInfo.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/SSLSessionInfo.java
+   - dir: core/target/classes
+     file: io/undertow/server/HttpServerExchange.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/server/HttpServerExchange.java
+   - dir: core/target/classes
+     file: io/undertow/util/AbstractAttachable.class
+     sourceDir: core/src/main/java
+     sourceFile: io/undertow/util/AbstractAttachable.java
