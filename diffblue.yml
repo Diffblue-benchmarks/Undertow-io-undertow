@@ -206,19 +206,6 @@ units:
      sourceFile: io/undertow/util/HttpString.java
  - target:
    - dir: core/target/classes
-     file: io/undertow/websockets/core/CloseMessage.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/websockets/core/CloseMessage.java
-   - dir: core/target/classes
-     file: io/undertow/websockets/core/UTF8Output.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/websockets/core/UTF8Output.java
-   - dir: core/target/classes
-     file: io/undertow/websockets/core/WebSockets.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/websockets/core/WebSockets.java
- - target:
-   - dir: core/target/classes
      file: io/undertow/util/URLUtils.class
      sourceDir: core/src/main/java
      sourceFile: io/undertow/util/URLUtils.java
@@ -267,32 +254,3 @@ units:
      file: io/undertow/server/handlers/proxy/mod_cluster/ModClusterContainer.class
      sourceDir: core/src/main/java
      sourceFile: io/undertow/server/handlers/proxy/mod_cluster/ModClusterContainer.java
- - target:
-   - dir: servlet/target/classes
-     file: io/undertow/servlet/handlers/security/SSLInformationAssociationHandler.class
-     sourceDir: servlet/src/main/java
-     sourceFile: io/undertow/servlet/handlers/security/SSLInformationAssociationHandler.java
-   - dir: servlet/target/classes
-     file: io/undertow/servlet/handlers/ServletRequestContext.class
-     sourceDir: servlet/src/main/java
-     sourceFile: io/undertow/servlet/handlers/ServletRequestContext.java
-   - dir: core/target/classes
-     file: io/undertow/server/ServerConnection.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/server/ServerConnection.java
-   - dir: core/target/classes
-     file: io/undertow/server/HttpHandler.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/server/HttpHandler.java
-   - dir: core/target/classes
-     file: io/undertow/server/SSLSessionInfo.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/server/SSLSessionInfo.java
-   - dir: core/target/classes
-     file: io/undertow/server/HttpServerExchange.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/server/HttpServerExchange.java
-   - dir: core/target/classes
-     file: io/undertow/util/AbstractAttachable.class
-     sourceDir: core/src/main/java
-     sourceFile: io/undertow/util/AbstractAttachable.java
